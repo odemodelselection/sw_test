@@ -1,6 +1,11 @@
-import string
 from scipy import stats
 from casadi import *
+from scipy.integrate import odeint
+from scipy.optimize import minimize
+from tqdm import tqdm
+import pandas as pd
+import string
+import os
 
 ## SW Test
 def preprocess_txt(x):
@@ -270,12 +275,102 @@ def get_SW_HV(dae, T, xi_hat, psi_hat, sigma2_hat, Y, estimated, s, trapezoid_ex
         J[:, :, i] = cur_J
         H[:, :, i] = cur_H
 
-
     J = np.mean(J, axis=2)
     J = J[:, estimated]
-    H = np.mean(J, axis=2)
+    H = np.mean(H, axis=2)
     H = H[estimated, :][:, estimated]
 
     V = J.reshape(-1, 1) @ J.reshape(-1, 1).T
 
     return V, H, Xhat
+
+
+### Estimation
+def estimate_model_params(m,
+                          Y,
+                          cur_time,
+                          models_func,
+                          models_psi,
+                          B=1000,
+                          BB=1000):
+    p = models_psi[m]['psi_est']
+    d = models_psi[m]['xi_est']
+
+    def f(opt_w):
+        # initial condition
+        opt_w[opt_w == 0] = 0.000001
+        xi = list(opt_w[:models_psi[m]['xi_est']]) + models_psi[m]['xi_given']
+        psi = list(opt_w[models_psi[m]['xi_est']:]) + models_psi[m]['psi_given'] + models_psi[m]['add_psi']
+        # print(xi, psi)
+        res = odeint(models_func[m], xi, cur_time, args=tuple(psi))
+
+        error = 0
+        for c in range(Y.shape[1]):
+            cur_X = res.T[c]
+            error += np.mean(np.power(Y[:, c] - cur_X, 2))
+        return error
+
+    all_res = {}
+    all_w = {}
+    best_res = np.inf
+    best_res_diff = np.inf
+    diff_tol = 1e-6
+    l = 0
+    while best_res_diff > diff_tol and l < B:
+        # initial uniform params
+        opt_w = np.asarray([np.random.uniform(0, 1) for i in range(p + d)])
+        bounds = models_psi[m]['xi_bounds'] + models_psi[m]['psi_bounds']
+        f(opt_w)
+        # run SLPSQ procedure
+        res = minimize(f, opt_w,
+                       bounds=bounds,
+                       method='SLSQP',
+                       options={'maxiter': 1000, 'ftol': 1e-6})
+
+        if res['fun'] < best_res:
+            if best_res_diff == np.inf:
+                best_res_diff = res['fun']
+            else:
+                best_res_diff = best_res - res['fun']
+            best_res = res['fun']
+            # print(best_res_diff, best_res, l)
+
+        all_res[l] = res['fun']
+        all_w[l] = res['x']
+        all_w[l][all_w[l] == 0] = 0.000001
+
+        l += 1
+
+    all_res_df = pd.DataFrame.from_dict(all_res, orient='index', columns=['MSE'])
+    all_w_df = pd.DataFrame.from_dict(all_w, orient='index', columns=['coef_{}'.format(i) for i in range(p + d)])
+
+    all_res_df = all_w_df.join(all_res_df)
+
+    best_w = all_res_df[all_res_df['MSE'] == all_res_df['MSE'].min()].values[0, :-1]
+    best_res = all_res_df[all_res_df['MSE'] == all_res_df['MSE'].min()].values[0, -1]
+
+    l = 0
+
+    while best_res_diff > diff_tol and l < BB:
+        opt_w = np.asarray([stats.truncnorm.rvs(loc=best_w[i], scale=np.sqrt(best_w[i]) / 3, a=0, b=np.inf)
+                            for i in range(p + d)])
+        f(opt_w)
+        # run SLPSQ procedure
+        res = minimize(f, opt_w,
+                       bounds=bounds,
+                       method='SLSQP',
+                       options={'maxiter': 1000, 'ftol': 1e-6})
+
+        if res['fun'] < best_res:
+            if best_res_diff == np.inf:
+                best_res_diff = res['fun']
+            else:
+                best_res_diff = best_res - res['fun']
+            best_res = res['fun']
+            best_w = res['x']
+            best_w[best_w == 0] = 0.000001
+            # print(best_res_diff, best_res, l)
+
+        l += 1
+
+    return best_w
