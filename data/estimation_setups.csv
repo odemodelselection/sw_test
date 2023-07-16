@@ -1,0 +1,7 @@
+model,parameter,given,lower_bound,upper_bound
+1,xi1,,0,inf
+1,psi1,,0,inf
+1,psi2,,0,inf
+2,xi1,,0,inf
+2,psi1,,-inf,0
+2,psi2,,0,inf
