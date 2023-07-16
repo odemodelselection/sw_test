@@ -5,8 +5,8 @@ from scipy.optimize import minimize
 from tqdm import tqdm
 import pandas as pd
 import string
-import os
 from itertools import product
+from matplotlib import pyplot as plt
 
 ## SW Test
 def preprocess_txt(x):
@@ -251,7 +251,7 @@ def get_J_H(dae, cur_t, psi_hat, xi_hat, hat_sigma2, Y, Xhat, i):
 
     return Jacobian, Hessian
 
-def get_SW_HV(dae, T, xi_hat, psi_hat, sigma2_hat, Y, estimated, s, trapezoid_exp=False):
+def get_SW_HV(dae, T, xi_hat, psi_hat, sigma2_hat, Y, estimated, s):
     options = dict(grid=T)
 
     F = integrator('F', 'cvodes', dae, options)
@@ -294,15 +294,23 @@ def estimate_model_params(m,
                           models_psi,
                           B=1000,
                           BB=1000):
+
     p = models_psi[m]['psi_est']
     d = models_psi[m]['xi_est']
-
+    print(models_psi)
     def f(opt_w):
-        # initial condition
-        opt_w[opt_w == 0] = 0.000001
-        xi = list(opt_w[:models_psi[m]['xi_est']]) + models_psi[m]['xi_given']
-        psi = list(opt_w[models_psi[m]['xi_est']:]) + models_psi[m]['psi_given'] + models_psi[m]['add_psi']
-        # print(xi, psi)
+        xi = models_psi[m]['xi_given'].copy()
+        ii = 0
+        for i in range(len(xi)):
+            if xi[i] != xi[i]:
+                xi[i] = opt_w[ii]
+                ii += 1
+        psi = models_psi[m]['psi_given'].copy()
+        for i in range(len(psi)):
+            if psi[i] != psi[i]:
+                psi[i] = opt_w[ii]
+                ii += 1
+
         res = odeint(models_func[m], xi, cur_time, args=tuple(psi))
 
         error = 0
@@ -320,7 +328,9 @@ def estimate_model_params(m,
     while best_res_diff > diff_tol and l < B:
         # initial uniform params
         opt_w = np.asarray([np.random.uniform(0, 1) for i in range(p + d)])
-        bounds = models_psi[m]['xi_bounds'] + models_psi[m]['psi_bounds']
+        xi_bounds = [x for x, y in zip(models_psi[m]['xi_bounds'], models_psi[m]['xi_given']) if y != y]
+        psi_bounds = [x for x, y in zip(models_psi[m]['psi_bounds'], models_psi[m]['psi_given']) if y != y]
+        bounds = xi_bounds + psi_bounds
         f(opt_w)
         # run SLPSQ procedure
         res = minimize(f, opt_w,
@@ -369,15 +379,28 @@ def estimate_model_params(m,
                 best_res_diff = best_res - res['fun']
             best_res = res['fun']
             best_w = res['x']
-            best_w[best_w == 0] = 0.000001
-            # print(best_res_diff, best_res, l)
+            # best_w[best_w == 0] = 0.000001
 
         l += 1
 
-    return best_w
+    xi = models_psi[m]['xi_given'].copy()
+    ii = 0
+    for i in range(len(xi)):
+        if xi[i] != xi[i]:
+            xi[i] = best_w[ii]
+        ii += 1
+
+    psi = models_psi[m]['psi_given'].copy()
+    for i in range(len(psi)):
+        if psi[i] != psi[i]:
+            psi[i] = best_w[ii]
+        ii += 1
+
+    return {'xi': xi, 'psi': psi}
 
 def define_model_psi_dict(ode_systems,
-                          target_folder):
+                          target_folder,
+                          estimation=False):
     models_psi = {}
 
     for ode in ode_systems:
@@ -407,6 +430,71 @@ def define_model_psi_dict(ode_systems,
         x_vars_in_equations = sorted(set(x_vars_in_equations))
 
         models_psi[model]['inactive_states_in_ODE'] = len(lines) - len(x_vars_in_equations)
+
+        if estimation:
+            est_setups = pd.read_csv('./data/estimation_setups.csv')
+            model_est_setups = est_setups[est_setups['model'] == model]
+            x_vars_in_equations = sorted(set(x_vars_in_equations))
+            theta_vars = sorted(set(theta_vars))
+
+            models_psi[model]['p'] = len(x_vars_in_equations)
+            models_psi[model]['d'] = len(theta_vars)
+
+            xi_est_setups = model_est_setups[model_est_setups['parameter'].str.contains('xi')]
+            psi_est_setups = model_est_setups[model_est_setups['parameter'].str.contains('psi')]
+
+            if len(x_vars_in_equations) != len(xi_est_setups):
+                print('Exit on Error of x_vars_in_equations != xi_est_setups')
+                sys.exit(1)
+
+            xi_given = []
+            xi_bounds = []
+            for i in range(len(x_vars_in_equations)):
+                cur_xi = xi_est_setups[xi_est_setups['parameter'] == 'xi{}'.format(i + 1)]
+                if cur_xi['given'].iloc[0] != cur_xi['given'].iloc[0]:
+                    lb = cur_xi['lower_bound'].iloc[0]
+                    ub = cur_xi['upper_bound'].iloc[0]
+                    if lb == 'inf' or lb == '-inf':
+                        lb = -np.inf
+                    if ub == 'inf':
+                        ub = np.inf
+                    xi_bounds.append((float(lb), float(ub)))
+                    xi_given.append(np.NaN)
+                else:
+                    xi_given.append(cur_xi['given'].iloc[0])
+                    xi_bounds.append((np.NaN, np.NaN))
+
+            models_psi[model]['xi_est'] = np.sum([True if x != x else False for x in xi_given])
+            models_psi[model]['xi_given'] = xi_given
+            models_psi[model]['xi_bounds'] = xi_bounds
+
+            if len(theta_vars) != len(psi_est_setups):
+                print('Exit on Error of theta_vars != psi_est_setups')
+                sys.exit(1)
+
+            psi_given = []
+            psi_bounds = []
+
+            for i in range(len(psi_est_setups)):
+                cur_psi = psi_est_setups[psi_est_setups['parameter'] == 'psi{}'.format(i + 1)]
+                if cur_psi['given'].iloc[0] != cur_psi['given'].iloc[0]:
+                    lb = cur_psi['lower_bound'].iloc[0]
+                    print(lb)
+                    ub = cur_psi['upper_bound'].iloc[0]
+                    if lb == 'inf' or lb == '-inf':
+                        print('!!!!!!!!!!!!')
+                        lb = -np.inf
+                    if ub == 'inf':
+                        ub = np.inf
+                    psi_bounds.append((float(lb), float(ub)))
+                    psi_given.append(np.NaN)
+                else:
+                    psi_given.append(cur_psi['given'].iloc[0])
+                    psi_bounds.append((np.NaN, np.NaN))
+
+            models_psi[model]['psi_est'] = np.sum([True if x != x else False for x in psi_given])
+            models_psi[model]['psi_given'] = psi_given
+            models_psi[model]['psi_bounds'] = psi_bounds
 
     return models_psi
 
@@ -592,3 +680,41 @@ def selection_in_favor(theta_setups,
         model_selection_by_exper.append(model_selection)
 
     return pd.concat(model_selection_by_exper)
+
+def create_thetas_df(Y, cur_time, models_best_w, models_psi, models_func):
+    all_thetas_dfs = []
+    for cur_m in models_func.keys():
+        xi_given = models_psi[cur_m]['xi_given']
+        psi_given = models_psi[cur_m]['psi_given']
+        best_w = models_best_w[cur_m]
+        xi = best_w['xi']
+        psi = best_w['psi']
+
+        res = odeint(models_func[cur_m], xi, cur_time, args=tuple(psi))
+
+        error = 0
+        sigmas2_hat = []
+
+        for c in range(Y.shape[1]):
+            cur_X = res[:, c]
+            sigmas2_hat.append(np.power(np.std(Y[:, c] - cur_X), 2))
+            error += np.mean(np.power(Y[:, c] - cur_X, 2))
+
+        sigmas2_hat = sigmas2_hat + [1] * (len(xi) - Y.shape[1])
+        thetas = [list(sigmas2_hat) + list(xi) + list(psi)]
+
+        thetas_df = pd.DataFrame(thetas, columns=
+        ['sigma{}'.format(i) for i in range(1, len(sigmas2_hat) + 1)] +
+        ['xi{}'.format(i) for i in range(1, len(xi) + 1)] +
+        ['psi{}'.format(i) for i in range(1, len(psi) + 1)])
+        thetas_df = pd.DataFrame(thetas_df.T.unstack()).reset_index()
+        thetas_df.columns = ['experiment', 'theta', 'value']
+        thetas_df['model'] = cur_m
+        thetas_df['experiment'] = 0
+        thetas_df['estimated'] = [1 if x != x else 0 for x in xi_given]*2 + [1 if x != x else 0 for x in psi_given]
+        thetas_df['to_include'] = [1]*Y.shape[1] + [0]*(len(xi_given) - Y.shape[1]) + \
+                                  [1]*Y.shape[1] + [0]*(len(xi_given) - Y.shape[1]) + \
+                                  [1]*len(psi_given)
+        all_thetas_dfs.append(thetas_df)
+
+    return pd.concat(all_thetas_dfs)
