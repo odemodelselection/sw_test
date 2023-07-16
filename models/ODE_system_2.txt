@@ -1,0 +1,1 @@
+-theta1*(-theta2 + x1)*(-theta2 + x1)

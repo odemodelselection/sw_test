@@ -1,0 +1,4 @@
+casadi==3.6.3
+pandas==2.0.1
+scipy==1.11.1
+tqdm==4.64.0
