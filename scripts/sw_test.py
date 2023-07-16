@@ -6,6 +6,7 @@ from tqdm import tqdm
 import pandas as pd
 import string
 import os
+from itertools import product
 
 ## SW Test
 def preprocess_txt(x):
@@ -374,3 +375,220 @@ def estimate_model_params(m,
         l += 1
 
     return best_w
+
+def define_model_psi_dict(ode_systems,
+                          target_folder):
+    models_psi = {}
+
+    for ode in ode_systems:
+        model = int(ode.split('_')[-1].replace('.txt', ''))
+        models_psi[model] = {}
+
+        with open(target_folder + '/' + ode) as f:
+            lines = f.readlines()
+
+        x_vars_in_equations = []
+        theta_vars = []
+
+        for line in lines:
+            cur_vars = preprocess_txt(line)
+            for var in cur_vars:
+                if 'theta' in var:
+                    theta_vars.append(var)
+                elif 'x' in var:
+                    x_vars_in_equations.append(var)
+                else:
+                    try:
+                        int(var)
+                    except:
+                        print('Process stop due to the unknown variable: {}'.format(var))
+                        sys.exit(1)
+
+        x_vars_in_equations = sorted(set(x_vars_in_equations))
+
+        models_psi[model]['inactive_states_in_ODE'] = len(lines) - len(x_vars_in_equations)
+
+    return models_psi
+
+def selection_in_favor(theta_setups,
+                       ode_systems,
+                       target_folder,
+                       models_psi,
+                       Y,
+                       T,
+                       alpha,
+                       z_half_alpha):
+    theta_setups_idx = theta_setups['model'].unique()
+    experiments_idx = theta_setups['experiment'].unique()
+
+    if len(theta_setups_idx) != len(ode_systems):
+        print('Exit on Error of theta_setups_idx != ODE_systems')
+        sys.exit(1)
+
+    models_est_params_by_exper = dict()
+
+    for e in [0]:
+        models_est_params = dict()
+
+        for cur_system in range(len(ode_systems)):
+            models_est_params[cur_system] = dict()
+
+            cur_ODE_system = ode_systems[cur_system]
+            model = int(cur_ODE_system.split('_')[-1].replace('.txt', ''))
+
+            with open(target_folder + '/' + cur_ODE_system) as f:
+                lines = f.readlines()
+
+            cur_theta_setup = theta_setups[(theta_setups['model'] == model) &
+                                           (theta_setups['experiment'] == e)]
+            sigma_to_exclude = cur_theta_setup[(cur_theta_setup['to_include'] != 1) &
+                                               (cur_theta_setup['theta'].str.contains('sigma'))].shape[0]
+            xi_to_exclude = cur_theta_setup[(cur_theta_setup['to_include'] != 1) &
+                                            (cur_theta_setup['theta'].str.contains('xi'))].shape[0]
+
+            if sigma_to_exclude != xi_to_exclude:
+                print('Shape of sigma to exclude is not equal ' /
+                      'to the shape of xi to exclude')
+                sys.exit(1)
+
+            s = sigma_to_exclude
+
+            x_vars = ['x{}'.format(i) for i in range(1, len(lines) + 1)]
+            x_vars_in_equations = []
+            theta_vars = []
+
+            for line in lines:
+                cur_vars = preprocess_txt(line)
+                for var in cur_vars:
+                    if 'theta' in var:
+                        theta_vars.append(var)
+                    elif 'x' in var:
+                        x_vars_in_equations.append(var)
+                    else:
+                        try:
+                            int(var)
+                        except:
+                            print('Process stop due to the unknown variable: {}'.format(var))
+                            sys.exit(1)
+
+            x_vars_in_equations = sorted(set(x_vars_in_equations))
+
+            if len(x_vars) - models_psi[model]['inactive_states_in_ODE'] != len(x_vars_in_equations):
+                print('Warning! Number of lines in model`s file does not equal the number of xi variables in equations')
+                sys.exit(1)
+
+            theta_vars = sorted(set(theta_vars))
+
+            x_vars_dict = {x: x_replace(x) for x in x_vars}
+            theta_vars_dict = {theta: theta_replace(theta) for theta in theta_vars}
+            d = len(x_vars_dict.keys())
+            p = len(theta_vars_dict.keys())
+
+            if d - s != Y.shape[1]:
+                print('Shape of Y is not equal to the shape of ODE system')
+                sys.exit(1)
+
+            sigmas_setup = cur_theta_setup[cur_theta_setup['theta'].str.contains('sigma')]
+            sigmas_setup = sigmas_setup.sort_values(by='theta')
+            xi_setup = cur_theta_setup[cur_theta_setup['theta'].str.contains('xi')]
+            xi_setup = xi_setup.sort_values(by='theta')
+            psi_setup = cur_theta_setup[cur_theta_setup['theta'].str.contains('psi')]
+            psi_setup = psi_setup.sort_values(by='theta')
+
+            if d != sigmas_setup.shape[0]:
+                print('Shape of sigma2 is not equal to the shape of ODE system')
+                sys.exit(1)
+
+            if d != xi_setup.shape[0]:
+                print('Shape of xi is not equal to the shape of ODE system')
+                sys.exit(1)
+
+            if p != psi_setup.shape[0]:
+                print('Shape of psi is not equal to the shape of ODE system')
+                sys.exit(1)
+
+            if np.sum(sigmas_setup['value'].isnull()) != 0:
+                print('Missed sigma value:')
+                print(sigmas_setup[sigmas_setup['value'].isnull()])
+                sys.exit(1)
+
+            if np.sum(xi_setup['value'].isnull()) != 0:
+                print('Missed xi value:')
+                print(xi_setup[xi_setup['value'].isnull()])
+                sys.exit(1)
+
+            if np.sum(psi_setup['value'].isnull()) != 0:
+                print('Missed psi value:')
+                print(psi_setup[psi_setup['value'].isnull()])
+                sys.exit(1)
+
+            cur_theta_setup = pd.concat([sigmas_setup, xi_setup, psi_setup])
+            estimated = cur_theta_setup['estimated'].values == 1
+            xi_hat = xi_setup['value'].values
+            psi_hat = psi_setup['value'].values
+            sigma2_hat = sigmas_setup['value'].values
+            # Formulate the ODE
+            global x_symb, psi_symb
+            x_symb = SX.sym('x', d)
+            psi_symb = SX.sym('p', p)
+            f = vertcat(*(eval(casadi_replace(ode, x_vars_dict, theta_vars_dict)) for ode in lines))
+            dae = dict(x=x_symb, p=psi_symb, ode=f)
+
+            V, H, Xhat = get_SW_HV(dae, T, xi_hat, psi_hat, sigma2_hat, Y, estimated, s)
+            models_est_params[cur_system]['Xhat'] = Xhat
+            models_est_params[cur_system]['Y'] = Y
+            models_est_params[cur_system]['sigmas2_hat'] = sigma2_hat
+            models_est_params[cur_system]['Vhat'] = V
+            models_est_params[cur_system]['Hhat'] = H
+
+        models_est_params_by_exper[e] = models_est_params
+
+    model_combs = list(product(list(models_est_params.keys()), list(models_est_params.keys())))
+    model_combs = list(set([tuple(sorted(x)) for x in model_combs if x[0] != x[1]]))
+
+    model_selection_by_exper = []
+
+    for e in models_est_params_by_exper.keys():
+        models_est_params = models_est_params_by_exper[e]
+        best_model = []
+        sw_values = []
+        modelA_sigma2_sums = []
+        modelB_sigma2_sums = []
+        for cur_models in model_combs:
+            modelA = cur_models[0]
+            modelB = cur_models[1]
+
+            Y_A = models_est_params[modelA]['Y']
+            X_hat_A = models_est_params[modelA]['Xhat']
+            sigmas2_A = models_est_params[modelA]['sigmas2_hat']
+            modelA_sigma2_sums.append(np.sum(sigmas2_A))
+            V_A = models_est_params[modelA]['Vhat']
+            H_A = models_est_params[modelA]['Hhat']
+
+            Y_B = models_est_params[modelB]['Y']
+            X_hat_B = models_est_params[modelB]['Xhat']
+
+            sigmas2_B = models_est_params[modelB]['sigmas2_hat']
+            modelB_sigma2_sums.append(np.sum(sigmas2_B))
+            V_B = models_est_params[modelB]['Vhat']
+            H_B = models_est_params[modelB]['Hhat']
+
+            sw_value = sw_test_vec(X_hat_A, X_hat_B, sigmas2_A, sigmas2_B, Y_A, Y_B, V_A, H_A, V_B, H_B, h=None,
+                                   alpha=alpha)
+            sw_values.append(sw_value)
+            if sw_value > np.abs(z_half_alpha):
+                cur_best_model = ode_systems[modelA]
+            elif sw_value < -np.abs(z_half_alpha):
+                cur_best_model = ode_systems[modelB]
+            else:
+                cur_best_model = None
+            best_model.append(cur_best_model)
+
+        model_selection = pd.DataFrame(model_combs, columns=['model A', 'model B']) + 1
+        model_selection['sw_value'] = sw_values
+        model_selection['in favor'] = [int(x.split('_')[-1].replace('.txt', '')) if x is not None else '-' for x in
+                                       best_model]
+
+        model_selection_by_exper.append(model_selection)
+
+    return pd.concat(model_selection_by_exper)
