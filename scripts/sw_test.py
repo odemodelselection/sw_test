@@ -293,11 +293,11 @@ def estimate_model_params(m,
                           models_func,
                           models_psi,
                           B=1000,
-                          BB=1000):
+                          BB=1000,
+                          save_plots=False):
 
     p = models_psi[m]['psi_est']
     d = models_psi[m]['xi_est']
-    print(models_psi)
     def f(opt_w):
         xi = models_psi[m]['xi_given'].copy()
         ii = 0
@@ -323,9 +323,10 @@ def estimate_model_params(m,
     all_w = {}
     best_res = np.inf
     best_res_diff = np.inf
-    diff_tol = 1e-6
-    l = 0
-    while best_res_diff > diff_tol and l < B:
+    best_res_s = []
+    best_res_n = []
+
+    for l in tqdm(range(B)):
         # initial uniform params
         opt_w = np.asarray([np.random.uniform(0, 1) for i in range(p + d)])
         xi_bounds = [x for x, y in zip(models_psi[m]['xi_bounds'], models_psi[m]['xi_given']) if y != y]
@@ -344,13 +345,13 @@ def estimate_model_params(m,
             else:
                 best_res_diff = best_res - res['fun']
             best_res = res['fun']
-            # print(best_res_diff, best_res, l)
+
+        best_res_s.append(best_res)
+        best_res_n.append(l)
 
         all_res[l] = res['fun']
         all_w[l] = res['x']
         all_w[l][all_w[l] == 0] = 0.000001
-
-        l += 1
 
     all_res_df = pd.DataFrame.from_dict(all_res, orient='index', columns=['MSE'])
     all_w_df = pd.DataFrame.from_dict(all_w, orient='index', columns=['coef_{}'.format(i) for i in range(p + d)])
@@ -360,9 +361,7 @@ def estimate_model_params(m,
     best_w = all_res_df[all_res_df['MSE'] == all_res_df['MSE'].min()].values[0, :-1]
     best_res = all_res_df[all_res_df['MSE'] == all_res_df['MSE'].min()].values[0, -1]
 
-    l = 0
-
-    while best_res_diff > diff_tol and l < BB:
+    for l in tqdm(range(BB)):
         opt_w = np.asarray([stats.truncnorm.rvs(loc=best_w[i], scale=np.sqrt(best_w[i]) / 3, a=0, b=np.inf)
                             for i in range(p + d)])
         f(opt_w)
@@ -379,22 +378,30 @@ def estimate_model_params(m,
                 best_res_diff = best_res - res['fun']
             best_res = res['fun']
             best_w = res['x']
-            # best_w[best_w == 0] = 0.000001
 
-        l += 1
+        best_res_s.append(best_res)
+        best_res_n.append(l + B)
 
     xi = models_psi[m]['xi_given'].copy()
     ii = 0
     for i in range(len(xi)):
         if xi[i] != xi[i]:
             xi[i] = best_w[ii]
-        ii += 1
+            ii += 1
 
     psi = models_psi[m]['psi_given'].copy()
+
     for i in range(len(psi)):
         if psi[i] != psi[i]:
             psi[i] = best_w[ii]
-        ii += 1
+            ii += 1
+
+    plt.plot(best_res_n, np.log(best_res_s))
+    plt.xlabel('iteration')
+    plt.ylabel('min of loss function (log)')
+    if save_plots:
+        plt.savefig('./plots/loss_functionstate_{}.png'.format(m), bbox_inches='tight')
+    plt.show()
 
     return {'xi': xi, 'psi': psi}
 
@@ -409,6 +416,7 @@ def define_model_psi_dict(ode_systems,
 
         with open(target_folder + '/' + ode) as f:
             lines = f.readlines()
+            lines = [line.replace('psi', 'theta') for line in lines]
 
         x_vars_in_equations = []
         theta_vars = []
@@ -479,7 +487,6 @@ def define_model_psi_dict(ode_systems,
                 cur_psi = psi_est_setups[psi_est_setups['parameter'] == 'psi{}'.format(i + 1)]
                 if cur_psi['given'].iloc[0] != cur_psi['given'].iloc[0]:
                     lb = cur_psi['lower_bound'].iloc[0]
-                    print(lb)
                     ub = cur_psi['upper_bound'].iloc[0]
                     if lb == 'inf' or lb == '-inf':
                         print('!!!!!!!!!!!!')
@@ -526,6 +533,8 @@ def selection_in_favor(theta_setups,
 
             with open(target_folder + '/' + cur_ODE_system) as f:
                 lines = f.readlines()
+                lines = [line.replace('psi', 'theta') for line in lines]
+
 
             cur_theta_setup = theta_setups[(theta_setups['model'] == model) &
                                            (theta_setups['experiment'] == e)]
