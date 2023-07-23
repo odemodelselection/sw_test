@@ -1,0 +1,25 @@
+gauseR package data(gause_1934_book_f39.1)
+https://polydora.github.io/General-ecology/Literature/Gause%201934%20Predator%20paey%20Voltera%20model.pdf
+"As Paramedum (1928) has pointed out, S. pombe is a perfectly satisfactory food for Paramecitan bursaria"
+
+@article{muhlbauer2020gauser,
+  title={gauseR: Simple methods for fitting Lotka-Volterra models describing Gause’s “Struggle for Existence”},
+  author={M{\"u}hlbauer, Lina K and Schulze, Maximilienne and Harpole, W Stanley and Clark, Adam T},
+  journal={Ecology and evolution},
+  volume={10},
+  number={23},
+  pages={13275--13283},
+  year={2020},
+  publisher={Wiley Online Library}
+}
+
+@article{gause1935experimental,
+  title={Experimental demonstration of Volterra’s periodic oscillations in the numbers of animals},
+  author={Gause, GF},
+  journal={Journal of Experimental Biology},
+  volume={12},
+  number={1},
+  pages={44--48},
+  year={1935},
+  publisher={The Company of Biologists Ltd}
+}

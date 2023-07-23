@@ -1,0 +1,2 @@
+psi2 * psi3 * x2 * x1 / (1 + psi2 * psi5 * x1) - psi4 * x1
+psi1 * x2 - psi2 * x2 * x1 / (1 + psi2 * psi5 * x1)
