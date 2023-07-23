@@ -1,7 +1,7 @@
 <h3 align="center">Model Selection of ODE systems using S-W test</h3>
 
   <p align="center">
-    We develop innovative testing methodologies for ODE model selection in presence of statistical noise. 
+    We develop innovative testing methodologies for ODE model selection in the presence of statistical noise. 
     While covering both the case of linear and nonlinear ODE systems, our approach builds upon a testing framework, 
     that sets it apart from the existing literature. In this repo, we provide Python code that allows to define ODE models, put data,
     specify estimating conditions, run estimation of parameters/initial values, and apply the S-W test for model selection.
@@ -35,11 +35,11 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Download a local copy of the repo and run model testing procedure with the following simple steps. We use Python 3.8 to run the code: you are free to try higher versions until stated in requirements.txt file libraries can be installed.
+Download a local copy of the repo and run the model testing procedure with the following simple steps. We use Python 3.8 to run the code: you are free to try higher versions until stated in the requirements.txt file libraries can be installed.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-In the root of the folder, there are two main files: "run_parameter_estimation.py" and "run_model_selection.py". The first one can be used to estimate model parameters/initial values based on the options defined in "./data/estimation_setups.csv" file. The second one is used to conduct model selection according to the model testing procedure described in the above paper. This file uses as input the data from the file ("./data/theta_setups.csv") which is the resulting output of running "run_parameter_estimation.py". So, in case you don't use our estimation procedure, you need to edit "./data/theta_setups.csv" by putting estimated/given values and define appropriate options accordingly.
+In the root of the folder, there are two main files: "run_parameter_estimation.py" and "run_model_selection.py". The first one can be used to estimate model parameters/initial values based on the options defined in the "./data/estimation_setups.csv" file. The second one is used to conduct model selection according to the model testing procedure described in the above paper. This file uses as input the data from the file "./data/theta_setups.csv" which is the resulting output of running "run_parameter_estimation.py". So, in case you don't use our estimation procedure, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
