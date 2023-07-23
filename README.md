@@ -6,7 +6,7 @@
     that sets it apart from the existing literature. In this repo, we provide Python code that allows to define ODE models, put data,
     specify estimating conditions, run estimation of parameters/initial values, and apply the S-W test for model selection.
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Articl »</strong></a>
+    <a href="https://github.com/github_username/repo_name"><strong>Article »</strong></a>
   </p>
 </div>
 
