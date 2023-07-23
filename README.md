@@ -40,6 +40,11 @@ Download a local copy of the repo and run the model testing procedure with the f
 <!-- USAGE EXAMPLES -->
 ## Usage
 In the root of the folder, there are two main files: "run_parameter_estimation.py" and "run_model_selection.py". The first one can be used to estimate model parameters/initial values based on the options defined in the "./data/estimation_setups.csv" file. The second one is used to conduct model selection according to the model testing procedure described in the above paper. This file uses as input the data from the file "./data/theta_setups.csv" which is the resulting output of running "run_parameter_estimation.py". So, in case you don't use our estimation procedure, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
+### Models
+The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
+
+In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. As an example, "ODE_system_1.txt" defines Lotka-Volterra model:
+
 
 ### Estimation
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
