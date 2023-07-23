@@ -44,12 +44,10 @@ In the root of the folder, there are two main files: "run_parameter_estimation.p
 ### Estimation
 
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
-
-$$\hat{\eta}_n = \underset{\eta}{argmin}\sum_{j=1}^d\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2.$$
+$$'\hat{\eta}_n = \underset{\eta}{argmin}\sum_{j=1}^d\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2.$$
 
 We implemented the SLSQP optimizer (\textcite{kraft1988software}) from "scipy" Python library to run minimization tasks.
 To estimate parameters $\sigma^2$ (if needed) for each model the following MLE estimator is used:
-
 $$\hat{\sigma}_{j}^2 = \frac{1}{n}\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2$$
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
