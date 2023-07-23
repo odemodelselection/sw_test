@@ -39,7 +39,7 @@ Download a local copy of the repo and run model testing procedure with the follo
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-In the root of the folder there are two main files: ODE_model_selection.py and ODE_model_selection_with_estimation.py. According to their names, the first one  
+In the root of the folder, there are two main files: "run_parameter_estimation.py" and "run_model_selection.py". The first one can be used to estimate model parameters/initial values based on the options defined in "./data/estimation_setups.csv" file. The second one is used to conduct model selection according to the model testing procedure described in the above paper. This file uses as input the data from the file ("./data/theta_setups.csv") which is the resulting output of running "run_parameter_estimation.py". So, in case you don't use our estimation procedure, you need to edit "./data/theta_setups.csv" by putting estimated/given values and define appropriate options accordingly.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
