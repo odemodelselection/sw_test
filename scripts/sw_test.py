@@ -362,7 +362,7 @@ def estimate_model_params(m,
     best_res = all_res_df[all_res_df['MSE'] == all_res_df['MSE'].min()].values[0, -1]
 
     for l in tqdm(range(BB)):
-        opt_w = np.asarray([stats.truncnorm.rvs(loc=best_w[i], scale=np.sqrt(best_w[i]) / 3, a=0, b=np.inf)
+        opt_w = np.asarray([stats.truncnorm.rvs(loc=best_w[i], scale=np.sqrt(np.abs(best_w[i])) / 3, a=0, b=np.inf)
                             for i in range(p + d)])
         f(opt_w)
         # run SLPSQ procedure
@@ -399,6 +399,7 @@ def estimate_model_params(m,
     plt.plot(best_res_n, np.log(best_res_s))
     plt.xlabel('iteration')
     plt.ylabel('min of loss function (log)')
+    plt.title('Model: {}'.format(m))
     if save_plots:
         plt.savefig('./plots/loss_functionstate_{}.png'.format(m), bbox_inches='tight')
     plt.show()

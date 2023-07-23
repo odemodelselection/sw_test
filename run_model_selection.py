@@ -26,7 +26,9 @@ models_psi = define_model_psi_dict(ode_systems, target_folder)
 
 # read data
 data = pd.read_csv('./data/data.csv')
-col_names = data.columns.tolist()[1:]
+cols = data.columns.tolist()
+state_names = cols[1:]
+time_name = cols[0]
 data.columns = ['T'] + ['Y{}'.format(i) for i in range(1, data.shape[1])]
 data = data.sort_values(by='T')
 Y = data.values[:,1:]
@@ -63,10 +65,10 @@ for c in range(Y.shape[1]):
     for m in X_hats.keys():
         plt.plot(ode_T, X_hats[m][:,c], label=r'$\hat{x}_{' + '{}'.format(str(m) + str(c+1)) + '}$')
     plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
-    plt.xlabel('T', fontsize=14)
-    plt.ylabel(col_names[c], fontsize=14)
+    plt.xlabel(time_name, fontsize=14)
+    plt.ylabel(state_names[c], fontsize=14)
     if save_plots:
-        plt.savefig('./plots/state_{}.png'.format(col_names[c]),
+        plt.savefig('./plots/state_{}.png'.format(state_names[c]),
                     bbox_inches='tight')
     plt.show()
 
@@ -77,7 +79,7 @@ for m in X_hats.keys():
                  c=named_colors[c])
         plt.scatter(T, Y[:, c], label=r'$Y_{}$'.format(c+1), c=named_colors[c])
         plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
-        plt.xlabel('T', fontsize=14)
+        plt.xlabel(time_name, fontsize=14)
         # plt.ylabel('State values', fontsize=14)
     if save_plots:
         plt.savefig('./plots/model_{}.png'.format(m),
