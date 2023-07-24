@@ -54,11 +54,21 @@ This file contains observations:
 The names of columns could be anything, but they are used in plots: the first column name as a label for the x-axis, and others - as names for y-label in corresponding plots of these states.
 
 ***'estimation_setups.csv'***
+
 This file defines what and how you want to estimate.
 - **"model"** and **"parameter"** columns define a state $\sigma^2$ (in the form of "sigma1", "sigma2", ...), a state initial value (in the form of "xi1", "xi2", ...), parameter (in the form of "psi1", "psi2", etc.) of the corresponding model for which you are going to define values in the rest of the columns. Please note, while the notation is "sigma1", "sigma2",... you need to provide the corresponding variance $\sigma^2$ (if it known) and not standard deviation;
 - put known values into the column **"given"**: they will not be estimated and used as it is to solve ODE systems. Also, they will be not used in $\hat{V}_n$ and $\hat{H}_n$ matrices. Leave this column empty if you want to estimate this creature;
 - **"lower_bound"** and **"upper_bound"** columns are intended to specify possible lower and upper bounds for the corresponding value of the parameter. For "sigma1", "sigma2",... parameters keep these columns empty;
 - in **"lower_initial_value"** and **"upper_initial_value"** you can provide the interval boundaries within which the initial guess for the parameter value will be chosen from the uniform distribution ($U\sim(li, bi)$) to run the minimization task. If you keep these columns blank, the initialization will be done from $U\sim(0,1)$, $U\sim(-1,0)$, and $U\sim(-1,1)$ depending on provided "lower/upper_bound". These columns should be both fulfilled with values or both kept empty. For "sigma1", "sigma2",... parameters keep these columns empty;
+
+***'theta_setups.csv'***
+
+This file is a result of running an optimization task to obtain MLE parameters. In the case of using our estimation procedure, this file is created automatically, so no need to edit it. If you want to use your MLE values, update 'theta_setups.csv' as follows:
+- column 'theta' should contain names of $\sigma^2$, initial values and model's parameters;
+- column 'value' should contain a value for the corresponding parameter;
+- column 'model' defines "k-th" number of the model to which the current value of the corresponding parameter belongs;
+- column 'estimated' defines if the current value was estimated (put 1) or given (put 0);
+- as for the column 'to_include': fill with 1 for each 'psi1', 'psi2', ...; fill with 1 for each 'sigma1', 'sigma2',... and 'xi1', 'xi2',... if the corresponding state was observed, otherwise put 0.
 
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
