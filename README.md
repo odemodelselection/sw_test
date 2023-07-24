@@ -1,4 +1,4 @@
-<h3 align="center">Model Selection of ODE systems using S-W test</h3>
+![image](https://github.com/odemodelselection/sw_test/assets/139265720/92645926-d3a0-4709-9318-23dfc4d6a9fc)<h3 align="center">Model Selection of ODE systems using S-W test</h3>
 
   <p align="center">
     We develop innovative testing methodologies for ODE model selection in the presence of statistical noise. 
@@ -53,6 +53,11 @@ This file contains observations:
   
 The names of columns could be anything, but they are used in plots: the first column name as a label for the x-axis, and others - as names for y-label in corresponding plots of these states.
 
+***'estimation_setups.csv'***
+This file defines what and how you want to estimate.
+- columns "model" and "parameter" define an initial value (in the form of "xi1", "xi2", ...) or parameter (in the form of "psi1", "psi2", etc.) of the corresponding model for which you are going to define values in the rest of the columns;
+- into the column "given" you put known values: they will not be estimated and used as it is to solve ODE systems. Also, they will be not used in '$\hat{V}_n$', '$\hat{H}_n$' matrices. Leave this column empty if you want to estimate this creature;
+- 
 
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
