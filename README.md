@@ -43,28 +43,17 @@ In the root of the folder, there are two main files: "run_parameter_estimation.p
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
 
-In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. As an example, "ODE_system_1.txt" defines the Lotka-Volterra model, which appears as model "1" across all computations:
-<table border="0">
- <tr>
-    <td><b style="font-size:30px">Mathematical equations</b></td>
-    <td><b style="font-size:30px">"ODE_system_1.txt"</b></td>
-    <td><b style="font-size:30px">"models.py" file</b></td>
- </tr>
- <tr>
-    <td>
-      ```math
-      \left\{\begin{matrix}
-      x_1^{\prime}(t) = \psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
-      x_2^{\prime}(t) =\psi_1x_2(t)(1-\frac{x_2(t)}{\psi_5})-\psi_2x_1(t)x_2(t)\hfill\\
-      \textbf{x(0)} = [\xi_1, \xi_2] \hfill
-      \end{matrix}\right.
-      ```
-      
-    </td>
-    <td>Lorem ipsum ...</td>
-    <td>Lorem ipsum ...</td>
- </tr>
-</table>
+In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. As an example, "ODE_system_1.txt" defines the Lotka-Volterra model, which appears as model "1":
+***Mathematical equations***
+```math
+\left\{\begin{matrix}
+x_1^{\prime}(t) = \psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
+x_2^{\prime}(t) =\psi_1x_2(t)(1-\frac{x_2(t)}{\psi_5})-\psi_2x_1(t)x_2(t)\hfill\\
+\textbf{x(0)} = [\xi_1, \xi_2] \hfill
+\end{matrix}\right.
+```      
+***"./data/ODE_system_1.txt"***
+***"./scripts/models.py"***
 
 ### Estimation
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
