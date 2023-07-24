@@ -49,7 +49,7 @@ This folder contains 3 files: 'data.csv', 'estimation_setups.csv', and 'theta_se
 This file contains observations:
 - the first column should be always time (or any other variable with respect to which state derivates are calculated);
 - other columns represent the observed states and should be in the same order as states in the model`s equations (the first column after time corresponds to the first equation in all models, the second column - to the second equation, etc.);
-- **important**: in the case when not all states in ODE models are observed, you need to put all corresponding to unobserved states equations after equations for observed states. For example, in the S.I.R. model, usually, only the "Infected" state is measured, thus epidemiological ODE systems should be defined in the way where the equation for "I" state is the first: "I.S.R", "I.S.E.R.", etc.
+- **important**: in the case when not all states in ODE models are observed, you need to put all equations corresponding to the unobserved states after equations for observed states. For example, in the S.I.R. model, usually, only the "Infected" state is measured, thus epidemiological ODE systems should be defined in the way where the equation for "I" state is the first: "I.S.R", "I.S.E.R.", etc.
   
 The names of columns could be anything, but they are used in plots: the first column name as a label for the x-axis, and others - as names for y-label in corresponding plots of these states.
 
