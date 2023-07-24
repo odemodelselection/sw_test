@@ -43,7 +43,7 @@ In the root of the folder, there are two main files: "run_parameter_estimation.p
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
 
-In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. As an example, "ODE_system_1.txt" defines the Lotka-Volterra model, which appears as model "1":
+In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. Here is an example of how corresponding files are edited with the Lotka-Volterra model, which appears as model "1":
 
 ***Mathematical equations:***
 ```math
@@ -65,6 +65,8 @@ def model1(x, t, psi1, psi2, psi3, psi4):
     d_x2 = psi1 * x2 - psi2 * x2 * x1
     return np.array([d_x1, d_x2])
 ```
+Thus for each model, you need to create a separate "./data/ODE_system_K.txt" file and add a function to the "./scripts/models.py" file. The latter is used to solve a system of ordinary differential equations via "scipy.integrate.odeint" function, so please refer to the official for the functions syntaxis.
+
 ### Estimation
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
 ```math
