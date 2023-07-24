@@ -45,6 +45,7 @@ In the root of the folder, there are two main files: "run_parameter_estimation.p
 This folder contains 3 files: 'data.csv', 'estimation_setups.csv', and 'theta_setups.csv'.
 
 **'data.csv'**
+
 This file contains observations:
 - the first column should be always time (or any other variable with respect to which state derivates are calculated);
 - other columns represent the observed states and should be in the same order as states in the model`s equations (the first column after time corresponds to the first equation in all models, the second column - to the second equation, etc.);
