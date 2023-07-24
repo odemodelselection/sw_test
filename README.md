@@ -44,7 +44,7 @@ In the root of the folder, there are two main files: "run_parameter_estimation.p
 ### Data
 This folder contains 3 files: 'data.csv', 'estimation_setups.csv', and 'theta_setups.csv'.
 
-**'data.csv'**
+***'data.csv'***
 
 This file contains observations:
 - the first column should be always time (or any other variable with respect to which state derivates are calculated);
