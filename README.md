@@ -51,7 +51,16 @@ In the current repo, there are 4 files corresponding to 4 predator-prey models s
     <td><b style="font-size:30px">"models.py" file</b></td>
  </tr>
  <tr>
-    <td>Lorem ipsum ...</td>
+    <td>
+      ```math
+      \left\{\begin{matrix}
+      x_1^{\prime}(t) = \psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
+      x_2^{\prime}(t) =\psi_1x_2(t)(1-\frac{x_2(t)}{\psi_5})-\psi_2x_1(t)x_2(t)\hfill\\
+      \textbf{x(0)} = [\xi_1, \xi_2] \hfill
+      \end{matrix}\right.
+      ```
+      
+    </td>
     <td>Lorem ipsum ...</td>
     <td>Lorem ipsum ...</td>
  </tr>
