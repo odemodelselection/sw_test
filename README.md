@@ -48,7 +48,7 @@ In the current repo, there are 4 files corresponding to 4 predator-prey models s
 ***Mathematical equations:***
 ```math
 \left\{\begin{matrix}
-x_1^{\prime}(t) = \psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
+x_1^{\prime}(t) = \psi_2\psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
 x_2^{\prime}(t) =\psi_1x_2(t)-\psi_2x_1(t)x_2(t)\hfill
 \end{matrix}\right.
 ```      
