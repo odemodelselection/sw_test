@@ -68,7 +68,7 @@ This file is a result of running an optimization task to obtain MLE parameters. 
 - column **"value"** should contain a value for the corresponding parameter;
 - column **"model"** defines "k-th" number of the model to which the current value of the corresponding parameter belongs;
 - column **"estimated"** defines if the current value was estimated (put 1) or given (put 0);
-- as for the column **"to_include"**: fill with 1 for each 'psi1', 'psi2', ...; fill with 1 for each 'sigma1', 'sigma2',... and 'xi1', 'xi2',... if the corresponding state was observed, otherwise put 0.
+- as for the column **"to_include"**: put 1 for each 'psi1', 'psi2', ...; 1 for each 'sigma1', 'sigma2',... and 'xi1', 'xi2',... if the corresponding state is observed, otherwise put 0.
 
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
