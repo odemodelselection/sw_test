@@ -40,24 +40,37 @@ Download a local copy of the repo and run the model testing procedure with the f
 <!-- USAGE EXAMPLES -->
 ## Usage
 In the root of the folder, there are two main files: "run_parameter_estimation.py" and "run_model_selection.py". The first one can be used to estimate model parameters/initial values based on the options defined in the "./data/estimation_setups.csv" file. The second one is used to conduct model selection according to the model testing procedure described in the above paper. This file uses as input the data from the file "./data/theta_setups.csv" which is the resulting output of running "run_parameter_estimation.py". So, in case you don't use our estimation procedure, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
+
+### Data
+This folder contains 3 files: 'data.csv', 'estimation_setups.csv', and 'theta_setups.csv'.
+
+**'data.csv'**
+This file contains observations:
+- the first column should be always time (or any other variable with respect to which state derivates are calculated);
+- other columns represent the observed states and should be in the same order as states in the model`s equations (the first column after time corresponds to the first equation in all models, the second column - to the second equation, etc.);
+- **important**: in the case when not all states in ODE models are observed, you need to put all corresponding to unobserved states equations after equations for observed states. For example, in the S.I.R. model, usually, only the "Infected" state was measured, thus epidemiological ODE systems should be defined in the way where the equation for "I" state is the first: "I.S.R", "I.S.E.R.", etc.
+  
+The names of columns could be anything, but they are used in plots: the first column name as a label for the x-axis, and others - as names for y-label in corresponding plots of these states.
+
+
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
 
 In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. Here is an example of how corresponding files are edited with the Lotka-Volterra model, which appears as model "1":
 
-***Mathematical equations:***
+**Mathematical equations:**
 ```math
 \left\{\begin{matrix}
 x_1^{\prime}(t) = \psi_2\psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
 x_2^{\prime}(t) =\psi_1x_2(t)-\psi_2x_1(t)x_2(t)\hfill
 \end{matrix}\right.
 ```      
-***Corresponding lines in "./data/ODE_system_1.txt":***
+**Corresponding lines in "./data/ODE_system_1.txt":**
 ```
 psi2 * psi3 * x2 * x1 - psi4 * x1
 psi1 * x2 - psi2 * x2 * x1
 ```
-***Corresponding function in "./scripts/models.py"***
+**Corresponding function in "./scripts/models.py"**
 ```
 def model1(x, t, psi1, psi2, psi3, psi4):
     x1, x2 = x
@@ -65,7 +78,13 @@ def model1(x, t, psi1, psi2, psi3, psi4):
     d_x2 = psi1 * x2 - psi2 * x2 * x1
     return np.array([d_x1, d_x2])
 ```
-Thus for each model, you need to create a separate "./data/ODE_system_K.txt" file and add K functions to the "./scripts/models.py" file. The latter are used to solve a system of ordinary differential equations via "scipy.integrate.odeint" function (please, refer to the official documentation for the functions syntaxis).
+Thus for each model, you need to create a separate "./data/ODE_system_K.txt" file and add K functions to the "./scripts/models.py" file. The latter are used to solve a system of ordinary differential equations via "scipy.integrate.odeint" function (please, refer to the official documentation for the function's syntaxis).
+
+### Plots
+
+The folder where different plots are saved through estimation runs (decline of the loss function versus the number of initializations) and model selection runs (observations and fitted models versus time).
+
+### Scripts
 
 ### Estimation
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
