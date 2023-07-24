@@ -44,15 +44,16 @@ In the root of the folder, there are two main files: "run_parameter_estimation.p
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
 
 In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. As an example, "ODE_system_1.txt" defines the Lotka-Volterra model, which appears as model "1":
+
 ***Mathematical equations***
 ```math
 \left\{\begin{matrix}
 x_1^{\prime}(t) = \psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
-x_2^{\prime}(t) =\psi_1x_2(t)(1-\frac{x_2(t)}{\psi_5})-\psi_2x_1(t)x_2(t)\hfill\\
-\textbf{x(0)} = [\xi_1, \xi_2] \hfill
+x_2^{\prime}(t) =\psi_1x_2(t)-\psi_2x_1(t)x_2(t)\hfill
 \end{matrix}\right.
 ```      
 ***"./data/ODE_system_1.txt"***
+
 ***"./scripts/models.py"***
 
 ### Estimation
