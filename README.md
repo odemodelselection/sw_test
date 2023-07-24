@@ -59,19 +59,19 @@ The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is t
 
 In the current repo, there are 4 files corresponding to 4 predator-prey models stated in the paper. Here is an example of how corresponding files are edited with the Lotka-Volterra model, which appears as model "1":
 
-**Mathematical equations:**
+***Mathematical equations:***
 ```math
 \left\{\begin{matrix}
 x_1^{\prime}(t) = \psi_2\psi_3x_1(t)x_2(t)-\psi_4x_1(t) \hfill\\
 x_2^{\prime}(t) =\psi_1x_2(t)-\psi_2x_1(t)x_2(t)\hfill
 \end{matrix}\right.
 ```      
-**Corresponding lines in "./data/ODE_system_1.txt":**
+***Corresponding lines in "./data/ODE_system_1.txt":***
 ```
 psi2 * psi3 * x2 * x1 - psi4 * x1
 psi1 * x2 - psi2 * x2 * x1
 ```
-**Corresponding function in "./scripts/models.py"**
+***Corresponding function in "./scripts/models.py"***
 ```
 def model1(x, t, psi1, psi2, psi3, psi4):
     x1, x2 = x
