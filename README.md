@@ -1,4 +1,4 @@
-![image](https://github.com/odemodelselection/sw_test/assets/139265720/59e8d7c4-ab13-4e50-a3ec-45dfd8c3f9a6)![image](https://github.com/odemodelselection/sw_test/assets/139265720/92645926-d3a0-4709-9318-23dfc4d6a9fc)<h3 align="center">Model Selection of ODE systems using S-W test</h3>
+<h3 align="center">Model Selection of ODE systems using Schennach-Wilhelm (S-W) test</h3>
 
   <p align="center">
     We develop innovative testing methodologies for ODE model selection in the presence of statistical noise. 
