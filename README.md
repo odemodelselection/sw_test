@@ -59,6 +59,8 @@ In the "SWtestModelSelection" module there is only one function "run()", that st
 
 <a name="foldercontents"></a>
 ## Folder Contents
+<a name="data"></a>
+
 ### Data
 This folder contains 4 files: 'data.csv', 'estimation_setups.csv', 'theta_setups.csv', 'model_selection_results.csv'.
 
@@ -96,6 +98,7 @@ This file is a result of running model selection procedure:
 - "in favor" indicates which model is closer to the true data-generating process in the Kullback-Leibler divergence sense. "-" means that null hypotheses (that two models are equally distant from the DGP) cannot be rejected. The significance of rejecting is defined by the "alpha" parameter of the "SWtestModelSelection" module.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="models"></a>
 
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
@@ -125,17 +128,20 @@ def model1(x, t, psi1, psi2, psi3, psi4):
 Thus for each model, you need to create a separate "./data/ODE_system_K.txt" file and add K functions to the "./scripts/models.py" file. The latter are used to solve a system of ordinary differential equations via "scipy.integrate.odeint" function (please, refer to the official documentation for the function's syntaxis).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="plots"></a>
 
 ### Plots
 
 In this folder, different plots are saved when running estimation (decline of the loss function versus the number of initializations) and model selection (observations and fitted models versus time) procedures.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="scripts"></a>
 
 ### Scripts
 This folder contains two files: "sw_test.py" and "models.py". In the first one, estimation and model selection algorithms are defined: "SWtestModelSelection" module is imported into "run_model_selection.py". The second one contains ODE system functions and should be edited according to the section "Models".
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="estimation"></a>
 
 ## Estimation
 To run MLE parameter estimation, set "with_estimation=True" in "SWtestModelSelection" module in "run_model_selection.py" file.
@@ -165,22 +171,21 @@ Thus:
 - secondly, we optimize the loss function generating initial values of parameters in some neighborhood of MLE parameter values obtained in the first step.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="troubleshooting"></a>
 
-<!-- TROUBLESHOOTING -->
 ## Troubleshooting 
 While running the model selection part of the code you can get the following error: 'CVodeB returned "CV_TOO_MUCH_WORK"'. It appears when the "casadi" package calculates the numerical derivatives for the current model (at which this error has arisen) and its corresponding MLE parameters. In this case, you need to check if the ODE system is defined properly and if the parameters make sense (sometimes it would require reestimating parameters with an increased "B" number of initializations or using another procedure).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="contact"></a>
 
-<!-- CONTACT -->
 ## Contact
 
 Oleksandr Laskorunskyi - [@Linkedin](https://www.linkedin.com/in/alexander-laskorunskiy/) - ode.model.selection@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="acknowledgments"></a>
 
-
-<!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 * []()
