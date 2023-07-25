@@ -1,4 +1,4 @@
-![image](https://github.com/odemodelselection/sw_test/assets/139265720/92645926-d3a0-4709-9318-23dfc4d6a9fc)<h3 align="center">Model Selection of ODE systems using S-W test</h3>
+![image](https://github.com/odemodelselection/sw_test/assets/139265720/59e8d7c4-ab13-4e50-a3ec-45dfd8c3f9a6)![image](https://github.com/odemodelselection/sw_test/assets/139265720/92645926-d3a0-4709-9318-23dfc4d6a9fc)<h3 align="center">Model Selection of ODE systems using S-W test</h3>
 
   <p align="center">
     We develop innovative testing methodologies for ODE model selection in the presence of statistical noise. 
@@ -50,7 +50,9 @@ There are several options in the "SWtestModelSelection" module:
 - "log_transform": if you need to bring your non-negative data to a similar scale, you can set this option to "True", which will apply the following transformation to all observations: $ln(Y+1)$, where adding 1 is needed to avoid taking logarithm over zeros;
 - "B" is the number of primary initializations (see "Estimations" section for details) in the estimation procedure. The default is 1000. In the case when "with_estimation=False" it doesn't play any role.
  - "BB" is the number of secondary initializations in the estimation procedure. The default is 100. In the case when "with_estimation=False" it doesn't play any role.
- - "n_plot" is the number of time points that will be used in plotting each ODE system. Keep "None" if you want to plot the solutions for the original time vector, or put any number greater than the current number of observations to make curves smoother. 
+ - "n_plot" is the number of time points that will be used in plotting each ODE system. Keep "None" if you want to plot the solutions for the original time vector, or put any number greater than the current number of observations to make curves smoother.
+
+In the "SWtestModelSelection" module there is only one function "run()", that starts estimation and/or model selection procedures. The result of the last one is the file './data/model_selection_results.csv'.
 
 ### Data
 This folder contains 4 files: 'data.csv', 'estimation_setups.csv', 'theta_setups.csv', 'model_selection_results.csv'.
@@ -82,7 +84,10 @@ This file is a result of running an optimization task to obtain MLE parameters. 
 - as for the column **"to_include"**: put 1 for each 'psi1', 'psi2', ...; 1 for each 'sigma1', 'sigma2',... and 'xi1', 'xi2',... if the corresponding state is observed, otherwise put 0.
 
 ***model_selection_results.csv***
-This file is a result of running 
+This file is a result of running model selection procedure:
+- "Model A" and "Model B" columns define the pair of models (where numbers correspond to the "k-th" subscript in the names of ".txt" files and names of functions in "./script/models.py" file - see section "Models" for details);
+- "sw_value" is the value of S-W test t-statistic, calculated according to the paper;
+- "in favor" indicates which model is closer to the true data-generating process in the Kullback-Leibler divergence sense. "-" means that null hypotheses (that two models are equally distant from the DGP) cannot be rejected. The significance of rejecting is defined by the "alpha" parameter of the "SWtestModelSelection" module.
 
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
