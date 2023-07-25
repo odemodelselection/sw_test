@@ -1,3 +1,4 @@
+<a name="readme-top"></a>
 <h3 align="center">Model Selection of ODE systems using Schennach-Wilhelm (S-W) test</h3>
 
   <p align="center">
@@ -11,14 +12,12 @@
 </div>
 
 
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#foldercontents">Folder Contents</a></li>
       <ul>
         <li><a href="#data">Data</a></li>
@@ -33,6 +32,7 @@
   </ol>
 </details>
 
+<a name="getting-started"></a>
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -40,6 +40,7 @@ We use Python 3.8 to run the code: you are free to try higher versions until sta
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<a name="usage"></a>
 <!-- USAGE EXAMPLES -->
 ## Usage
 In the root of the folder, there is a file, "run_model_selection.py", which can be used to estimate model parameters/initial values and to conduct model selection according to the model testing procedure described in the above paper. This script uses as input the data from the files "./data/estimation_setups.csv" and "./data/theta_setups.csv". The second one is the result of running an estimation procedure. So, in case you don't use it, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
@@ -56,6 +57,7 @@ In the "SWtestModelSelection" module there is only one function "run()", that st
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<a name="foldercontents"></a>
 ## Folder Contents
 ### Data
 This folder contains 4 files: 'data.csv', 'estimation_setups.csv', 'theta_setups.csv', 'model_selection_results.csv'.
