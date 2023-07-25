@@ -171,7 +171,7 @@ Thus:
 <!-- CONTACT -->
 ## Contact
 
-Oleksandr Laskorunskyi - [@linkedin_handle](https://www.linkedin.com/in/alexander-laskorunskiy/) - ode.model.selection@gmail.com
+Oleksandr Laskorunskyi - [@Linkedin](https://www.linkedin.com/in/alexander-laskorunskiy/) - ode.model.selection@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
