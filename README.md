@@ -84,6 +84,7 @@ This file is a result of running an optimization task to obtain MLE parameters. 
 - as for the column **"to_include"**: put 1 for each 'psi1', 'psi2', ...; 1 for each 'sigma1', 'sigma2',... and 'xi1', 'xi2',... if the corresponding state is observed, otherwise put 0.
 
 ***model_selection_results.csv***
+
 This file is a result of running model selection procedure:
 - "Model A" and "Model B" columns define the pair of models (where numbers correspond to the "k-th" subscript in the names of ".txt" files and names of functions in "./script/models.py" file - see section "Models" for details);
 - "sw_value" is the value of S-W test t-statistic, calculated according to the paper;
@@ -118,9 +119,10 @@ Thus for each model, you need to create a separate "./data/ODE_system_K.txt" fil
 
 ### Plots
 
-The folder where different plots are saved through estimation runs (decline of the loss function versus the number of initializations) and model selection runs (observations and fitted models versus time).
+In this folder, different plots are saved when running estimation (decline of the loss function versus the number of initializations) and model selection (observations and fitted models versus time) procedures.
 
 ### Scripts
+
 
 ### Estimation
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
