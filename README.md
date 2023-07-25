@@ -170,6 +170,8 @@ Thus:
 - firstly, we optimize the loss function generating initial values of parameters in the set defined in "estimation_setups.csv";
 - secondly, we optimize the loss function generating initial values of parameters in some neighborhood of MLE parameter values obtained in the first step.
 
+Set BB=0 to skip the second step in estimations.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <a name="troubleshooting"></a>
 
