@@ -16,17 +16,18 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
+    <li><a href="#foldercontents">Folder Contents</a></li>
+      <ul>
+        <li><a href="#data">Data</a></li>
+        <li><a href="#models">Models</a></li>
+        <li><a href="#data">Plots</a></li>
+        <li><a href="#models">Scripts</a></li>
+      </ul>
+    <li><a href="#estimation">Estimation</a></li>
+    <li><a href="#troubleshooting ">Troubleshooting </a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -165,6 +166,7 @@ Thus:
 
 <!-- TROUBLESHOOTING -->
 ## Troubleshooting 
+While running the model selection part of the code you can get the following error: 'CVodeB returned "CV_TOO_MUCH_WORK"'. It appears when the "casadi" package calculates the numerical derivatives for the current model (at which this error has arisen) and its corresponding MLE parameters. In this case, you need to check if the ODE system is defined properly and if the parameters make sense (sometimes it would require reestimating parameters with an increased "B" number of initializations or using another procedure).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
