@@ -35,7 +35,7 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Download a local copy of the repo and run the model testing procedure with the following simple steps. We use Python 3.8 to run the code: you are free to try higher versions until stated in the requirements.txt file libraries can be installed.
+We use Python 3.8 to run the code: you are free to try higher versions until stated in the requirements.txt file libraries can be installed. Download a local copy of the repo and run the model testing procedure via "run_model_selection.py" file by setting required options (see section "Usage").
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
