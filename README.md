@@ -138,7 +138,13 @@ To estimate parameters $\sigma^2$ (if needed) for each model the following MLE e
 ```math
 \hat{\sigma}_{j}^2 = \frac{1}{n}\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2
 ```
-Before launching estimations you need properly to define the required for the optimization process information in "./data/estimation_setups.csv" (see section "Data").
+Before launching estimations you need to define properly the required information for the optimization process in "./data/estimation_setups.csv" file (see section "Data").
+
+The estimation procedure includes several steps: 
+- run "B" number of estimations according to parameters defined in "estimation_setups.csv";
+- save "B" number of loss functions and corresponding values of MLE parameters;
+- choose MLE parameters with the lowest loss function;
+- run "BB" number of estimations where initial values of parameters for minimization task is generated from $N(\hat{\theta}, \frac{1}{3}\sqrt{\hat{\theta}})$ ;
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
