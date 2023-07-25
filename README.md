@@ -144,7 +144,13 @@ The estimation procedure includes several steps:
 - run "B" number of estimations according to parameters defined in "estimation_setups.csv";
 - save "B" number of loss functions and corresponding values of MLE parameters;
 - choose MLE parameters with the lowest loss function;
-- run "BB" number of estimations where initial values of parameters for minimization task is generated from $N(\hat{\theta}, \frac{1}{3}\sqrt{\hat{\theta}})$ ;
+- run "BB" number of estimations where initial values of parameters for minimization task is generated from $N(\hat{\theta}, \frac{1}{3}\sqrt{|\hat{\theta}|})$ ;
+- choose MLE parameters with the lowest loss function;
+- save chosen values to the "theta_setups.csv" file.
+
+Thus:
+- firstly, we optimize the loss function generating initial values of parameters in the set defined in "estimation_setups.csv";
+- secondly, we optimize the loss function generating initial values of parameters in some neighborhood of MLE parameter values obtained in the first step.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
