@@ -39,10 +39,19 @@ Download a local copy of the repo and run the model testing procedure with the f
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-In the root of the folder, there are two main files: "run_parameter_estimation.py" and "run_model_selection.py". The first one can be used to estimate model parameters/initial values based on the options defined in the "./data/estimation_setups.csv" file. The second one is used to conduct model selection according to the model testing procedure described in the above paper. This file uses as input the data from the file "./data/theta_setups.csv" which is the resulting output of running "run_parameter_estimation.py". So, in case you don't use our estimation procedure, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
+In the root of the folder, there is a main file, "run_model_selection.py", which can be used to estimate model parameters/initial values and to conduct model selection according to the model testing procedure described in the above paper. This script uses as input the data from the files "./data/estimation_setups.csv" and "./data/theta_setups.csv". The second one is the result of running an estimation procedure. So, in case you don't use it, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
+
+### Running procedure options
+There are several options in the "SWtestModelSelection" module:
+- "with_estimation" takes values "True/False": if you don't need estimation put "False", otherwise keep default "True";
+- "alpha" is the level at which the test rejects the null hypothesis. The default is 0.05.
+- "log_transform": if you need to bring your non-negative data to a similar scale, you can set this option to "True", which will apply the following transformation to all observations: $ln(Y+1)$, where adding 1 is needed to avoid taking logarithm over zeros;
+- "B" is the number of primary initializations (see "Estimations" section for details) in the estimation procedure. The default is 1000. In the case when "with_estimation=False" it doesn't play any role.
+ - "BB" is the number of secondary initializations in the estimation procedure. The default is 100. In the case when "with_estimation=False" it doesn't play any role.
+ - "n_plot" is the number of time points that will be used in plotting each ODE system. Keep "None" if you want to plot the solutions for the original time vector, or put any number greater than the current number of observations to make curves smoother. 
 
 ### Data
-This folder contains 3 files: 'data.csv', 'estimation_setups.csv', and 'theta_setups.csv'.
+This folder contains 4 files: 'data.csv', 'estimation_setups.csv', 'theta_setups.csv', 'model_selection_results.csv'.
 
 ***'data.csv'***
 
@@ -69,6 +78,9 @@ This file is a result of running an optimization task to obtain MLE parameters. 
 - column **"model"** defines "k-th" number of the model to which the current value of the corresponding parameter belongs;
 - column **"estimated"** defines if the current value was estimated (put 1) or given (put 0);
 - as for the column **"to_include"**: put 1 for each 'psi1', 'psi2', ...; 1 for each 'sigma1', 'sigma2',... and 'xi1', 'xi2',... if the corresponding state is observed, otherwise put 0.
+
+***model_selection_results.csv***
+This file is a result of running 
 
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
