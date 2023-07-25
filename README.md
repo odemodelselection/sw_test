@@ -43,8 +43,7 @@ Download a local copy of the repo and run the model testing procedure with the f
 ## Usage
 In the root of the folder, there is a file, "run_model_selection.py", which can be used to estimate model parameters/initial values and to conduct model selection according to the model testing procedure described in the above paper. This script uses as input the data from the files "./data/estimation_setups.csv" and "./data/theta_setups.csv". The second one is the result of running an estimation procedure. So, in case you don't use it, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
 
-### Procedure options
-There are several options in the "SWtestModelSelection" module:
+There are several options in the "SWtestModelSelection" module (that is in "run_model_selection.py"):
 - "with_estimation" takes values "True/False": if you don't need estimation put "False", otherwise keep default "True";
 - "alpha" is the level at which the test rejects the null hypothesis. The default is 0.05.
 - "log_transform": if you need to bring your non-negative data to a similar scale, you can set this option to "True", which will apply the following transformation to all observations: $ln(Y+1)$, where adding 1 is needed to avoid taking logarithm over zeros;
@@ -53,6 +52,8 @@ There are several options in the "SWtestModelSelection" module:
  - "n_plot" is the number of time points that will be used in plotting each ODE system. Keep "None" if you want to plot the solutions for the original time vector, or put any number greater than the current number of observations to make curves smoother.
 
 In the "SWtestModelSelection" module there is only one function "run()", that starts estimation and/or model selection procedures. The result of the last one is the file './data/model_selection_results.csv'.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Folder Contents
 ### Data
@@ -91,6 +92,8 @@ This file is a result of running model selection procedure:
 - "sw_value" is the value of S-W test t-statistic, calculated according to the paper;
 - "in favor" indicates which model is closer to the true data-generating process in the Kullback-Leibler divergence sense. "-" means that null hypotheses (that two models are equally distant from the DGP) cannot be rejected. The significance of rejecting is defined by the "alpha" parameter of the "SWtestModelSelection" module.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
 
@@ -118,12 +121,18 @@ def model1(x, t, psi1, psi2, psi3, psi4):
 ```
 Thus for each model, you need to create a separate "./data/ODE_system_K.txt" file and add K functions to the "./scripts/models.py" file. The latter are used to solve a system of ordinary differential equations via "scipy.integrate.odeint" function (please, refer to the official documentation for the function's syntaxis).
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Plots
 
 In this folder, different plots are saved when running estimation (decline of the loss function versus the number of initializations) and model selection (observations and fitted models versus time) procedures.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Scripts
 This folder contains two files: "sw_test.py" and "models.py". In the first one, estimation and model selection algorithms are defined: "SWtestModelSelection" module is imported into "run_model_selection.py". The second one contains ODE system functions and should be edited according to the section "Models".
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Estimation
 To run MLE parameter estimation, set "with_estimation=True" in "SWtestModelSelection" module in "run_model_selection.py" file.
@@ -162,9 +171,7 @@ Thus:
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
-
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Oleksandr Laskorunskyi - [@linkedin_handle](https://www.linkedin.com/in/alexander-laskorunskiy/) - ode.model.selection@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
