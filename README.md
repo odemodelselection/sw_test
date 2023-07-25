@@ -54,6 +54,7 @@ There are several options in the "SWtestModelSelection" module:
 
 In the "SWtestModelSelection" module there is only one function "run()", that starts estimation and/or model selection procedures. The result of the last one is the file './data/model_selection_results.csv'.
 
+## Folder Contents
 ### Data
 This folder contains 4 files: 'data.csv', 'estimation_setups.csv', 'theta_setups.csv', 'model_selection_results.csv'.
 
@@ -122,9 +123,11 @@ Thus for each model, you need to create a separate "./data/ODE_system_K.txt" fil
 In this folder, different plots are saved when running estimation (decline of the loss function versus the number of initializations) and model selection (observations and fitted models versus time) procedures.
 
 ### Scripts
+This folder contains two files: "sw_test.py" and "models.py". In the first one, estimation and model selection algorithms are defined: "SWtestModelSelection" module is imported into "run_model_selection.py". The second one contains ODE system functions and should be edited according to the section "Models".
 
+## Estimation
+To run MLE parameter estimation, set "with_estimation=True" in "SWtestModelSelection" module in "run_model_selection.py" file.
 
-### Estimation
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
 ```math
 \hat{\eta}_n = \underset{\eta}{argmin}\sum_{j=1}^d\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2
@@ -135,7 +138,7 @@ To estimate parameters $\sigma^2$ (if needed) for each model the following MLE e
 ```math
 \hat{\sigma}_{j}^2 = \frac{1}{n}\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2
 ```
-Before launching "run_parameter_estimation.py" file you need properly define in "./data/estimation_setups.csv" required for the optimization process information:
+Before launching estimations you need properly to define the required for the optimization process information in "./data/estimation_setups.csv" (see section "Data").
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
