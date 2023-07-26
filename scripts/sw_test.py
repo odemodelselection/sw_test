@@ -8,8 +8,6 @@ from itertools import product
 from matplotlib import pyplot as plt
 np.set_printoptions(suppress=True)
 import matplotlib.colors as mcolors
-named_colors = list(mcolors.CSS4_COLORS.keys())
-named_colors0 = plt.cm.tab10.colors
 from models import *
 
 ## SW Test
@@ -20,6 +18,10 @@ class SWtest:
         self.models_func = {i: eval('model{}'.format(i)) for i in range(1, len(self.ode_systems) + 1)}
         self.Y = None
         self.T = None
+        if len(self.ode_systems) <= 10:
+            self.named_colors = plt.cm.tab10.colors
+        else:
+            self.named_colors = list(mcolors.CSS4_COLORS.keys())
 
     def preprocess_txt(self, x):
         return self.remove_punctuation(x.replace('\n', '').strip().lower()).split()
@@ -531,8 +533,8 @@ class SWtest:
         for m in X_hats.keys():
             for c in range(Y.shape[1]):
                 plt.plot(ode_T, X_hats[m][:, c], label=r'$\hat{x}_{' + '{}'.format(str(m) + str(c + 1)) + '}$',
-                         c=named_colors[c])
-                plt.scatter(T, Y[:, c], label=r'$Y_{}$'.format(c + 1), c=named_colors[c])
+                         c=self.named_colors[c])
+                plt.scatter(T, Y[:, c], label=r'$Y_{}$'.format(c + 1), c=self.named_colors[c])
                 plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
                 plt.xlabel(time_name, fontsize=14)
                 # plt.ylabel('State values', fontsize=14)
