@@ -1,4 +1,5 @@
-![image](https://github.com/odemodelselection/sw_test/assets/139265720/92645926-d3a0-4709-9318-23dfc4d6a9fc)<h3 align="center">Model Selection of ODE systems using S-W test</h3>
+<a name="readme-top"></a>
+<h3 align="center">Model Selection of ODE systems using Schennach-Wilhelm (S-W) test</h3>
 
   <p align="center">
     We develop innovative testing methodologies for ODE model selection in the presence of statistical noise. 
@@ -11,44 +12,54 @@
 </div>
 
 
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
+    <li><a href="#foldercontents">Folder Contents</a></li>
+      <ul>
+        <li><a href="#data">Data</a></li>
+        <li><a href="#models">Models</a></li>
+        <li><a href="#data">Plots</a></li>
+        <li><a href="#models">Scripts</a></li>
+      </ul>
+    <li><a href="#estimation">Estimation</a></li>
+    <li><a href="#troubleshooting ">Troubleshooting </a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
+<a name="getting-started"></a>
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Download a local copy of the repo and run the model testing procedure with the following simple steps. We use Python 3.8 to run the code: you are free to try higher versions until stated in the requirements.txt file libraries can be installed.
+We use Python 3.8 to run the code: you are free to try higher versions until stated in the requirements.txt file libraries can be installed. Download a local copy of the repo and run the model testing procedure via "run_model_selection.py" file by setting required options (see section "Usage").
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<a name="usage"></a>
 <!-- USAGE EXAMPLES -->
 ## Usage
-In the root of the folder, there is a main file, "run_model_selection.py", which can be used to estimate model parameters/initial values and to conduct model selection according to the model testing procedure described in the above paper. This script uses as input the data from the files "./data/estimation_setups.csv" and "./data/theta_setups.csv". The second one is the result of running an estimation procedure. So, in case you don't use it, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
+In the root of the folder, there is a file, "run_model_selection.py", which can be used to estimate model parameters/initial values and to conduct model selection according to the model testing procedure described in the above paper. This script uses as input the data from the files "./data/estimation_setups.csv" and "./data/theta_setups.csv". The second one is the result of running an estimation procedure. So, in case you don't use it, you need to edit "./data/theta_setups.csv" by putting estimated/given values and defining appropriate options accordingly.
 
-### Running procedure options
-There are several options in the "SWtestModelSelection" module:
+There are several options in the "SWtestModelSelection" module (that is in "run_model_selection.py"):
 - "with_estimation" takes values "True/False": if you don't need estimation put "False", otherwise keep default "True";
 - "alpha" is the level at which the test rejects the null hypothesis. The default is 0.05.
 - "log_transform": if you need to bring your non-negative data to a similar scale, you can set this option to "True", which will apply the following transformation to all observations: $ln(Y+1)$, where adding 1 is needed to avoid taking logarithm over zeros;
 - "B" is the number of primary initializations (see "Estimations" section for details) in the estimation procedure. The default is 1000. In the case when "with_estimation=False" it doesn't play any role.
  - "BB" is the number of secondary initializations in the estimation procedure. The default is 100. In the case when "with_estimation=False" it doesn't play any role.
- - "n_plot" is the number of time points that will be used in plotting each ODE system. Keep "None" if you want to plot the solutions for the original time vector, or put any number greater than the current number of observations to make curves smoother. 
+ - "n_plot" is the number of time points that will be used in plotting each ODE system. Keep "None" if you want to plot the solutions for the original time vector, or put any number greater than the current number of observations to make curves smoother.
+
+In the "SWtestModelSelection" module there is only one function "run()", that starts estimation and/or model selection procedures. The result of the last one is the file './data/model_selection_results.csv'.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<a name="foldercontents"></a>
+## Folder Contents
+<a name="data"></a>
 
 ### Data
 This folder contains 4 files: 'data.csv', 'estimation_setups.csv', 'theta_setups.csv', 'model_selection_results.csv'.
@@ -80,7 +91,14 @@ This file is a result of running an optimization task to obtain MLE parameters. 
 - as for the column **"to_include"**: put 1 for each 'psi1', 'psi2', ...; 1 for each 'sigma1', 'sigma2',... and 'xi1', 'xi2',... if the corresponding state is observed, otherwise put 0.
 
 ***model_selection_results.csv***
-This file is a result of running 
+
+This file is a result of running model selection procedure:
+- "Model A" and "Model B" columns define the pair of models (where numbers correspond to the "k-th" subscript in the names of ".txt" files and names of functions in "./script/models.py" file - see section "Models" for details);
+- "sw_value" is the value of S-W test t-statistic, calculated according to the paper;
+- "in favor" indicates which model is closer to the true data-generating process in the Kullback-Leibler divergence sense. "-" means that null hypotheses (that two models are equally distant from the DGP) cannot be rejected. The significance of rejecting is defined by the "alpha" parameter of the "SWtestModelSelection" module.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="models"></a>
 
 ### Models
 The folder "./models/" contains "ODE_system_k.txt" files, where k=1,2,...,K is the corresponding number of the model. In the file name "ODE_system_k.txt" only "k" should be edited. Each such file contains equations of an ODE system, where each equation should be placed in a new row. 
@@ -109,13 +127,25 @@ def model1(x, t, psi1, psi2, psi3, psi4):
 ```
 Thus for each model, you need to create a separate "./data/ODE_system_K.txt" file and add K functions to the "./scripts/models.py" file. The latter are used to solve a system of ordinary differential equations via "scipy.integrate.odeint" function (please, refer to the official documentation for the function's syntaxis).
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="plots"></a>
+
 ### Plots
 
-The folder where different plots are saved through estimation runs (decline of the loss function versus the number of initializations) and model selection runs (observations and fitted models versus time).
+In this folder, different plots are saved when running estimation (decline of the loss function versus the number of initializations) and model selection (observations and fitted models versus time) procedures.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="scripts"></a>
 
 ### Scripts
+This folder contains two files: "sw_test.py" and "models.py". In the first one, estimation and model selection algorithms are defined: "SWtestModelSelection" module is imported into "run_model_selection.py". The second one contains ODE system functions and should be edited according to the section "Models".
 
-### Estimation
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="estimation"></a>
+
+## Estimation
+To run MLE parameter estimation, set "with_estimation=True" in "SWtestModelSelection" module in "run_model_selection.py" file.
+
 Parameters estimation  $\eta = (\xi, \psi)$ (whenever each is needed) for each model is obtained by using MLE estimator of the form:
 ```math
 \hat{\eta}_n = \underset{\eta}{argmin}\sum_{j=1}^d\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2
@@ -126,62 +156,38 @@ To estimate parameters $\sigma^2$ (if needed) for each model the following MLE e
 ```math
 \hat{\sigma}_{j}^2 = \frac{1}{n}\sum_{i=1}^n(Y_{ji}-x_j(t_i;\eta))^2
 ```
-Before launching "run_parameter_estimation.py" file you need properly define in "./data/estimation_setups.csv" required for the optimization process information:
+Before launching estimations you need to define properly the required information for the optimization process in "./data/estimation_setups.csv" file (see section "Data").
 
+The estimation procedure includes several steps: 
+- run "B" number of estimations according to parameters defined in "estimation_setups.csv";
+- save "B" number of loss functions and corresponding values of MLE parameters;
+- choose MLE parameters with the lowest loss function;
+- run "BB" number of estimations where initial values of parameters for minimization task is generated from $N(\hat{\theta}, \frac{1}{3}\sqrt{|\hat{\theta}|})$ ;
+- choose MLE parameters with the lowest loss function;
+- save chosen values to the "theta_setups.csv" file.
 
-<!-- ROADMAP -->
-## Roadmap
+Thus:
+- firstly, we optimize the loss function generating initial values of parameters in the set defined in "estimation_setups.csv";
+- secondly, we optimize the loss function generating initial values of parameters in some neighborhood of MLE parameter values obtained in the first step.
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Set BB=0 to skip the second step in estimations.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="troubleshooting"></a>
 
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+## Troubleshooting 
+While running the model selection part of the code you can get the following error: 'CVodeB returned "CV_TOO_MUCH_WORK"'. It appears when the "casadi" package calculates the numerical derivatives for the current model (at which this error has arisen) and its corresponding MLE parameters. In this case, you need to check if the ODE system is defined properly and if the parameters make sense (sometimes it would require reestimating parameters with an increased "B" number of initializations or using another procedure).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="contact"></a>
 
-
-
-<!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
-
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Oleksandr Laskorunskyi - [@Linkedin](https://www.linkedin.com/in/alexander-laskorunskiy/) - ode.model.selection@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+<a name="acknowledgments"></a>
 
-
-
-<!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 * []()
@@ -189,37 +195,3 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 * []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com 
