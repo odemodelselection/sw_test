@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 np.set_printoptions(suppress=True)
 import matplotlib.colors as mcolors
 named_colors = list(mcolors.CSS4_COLORS.keys())
+named_colors0 = plt.cm.tab10.colors
 from models import *
 
 ## SW Test
@@ -578,6 +579,7 @@ class Estimate:
     def create_thetas_df(self):
         all_thetas_dfs = []
         for cur_m in self.models_func.keys():
+            print('Create theta_setup for model# {}'.format(cur_m))
             sigma_given = self.models_psi[cur_m]['sigma_given']
             xi_given = self.models_psi[cur_m]['xi_given']
             psi_given = self.models_psi[cur_m]['psi_given']
@@ -596,7 +598,8 @@ class Estimate:
                 else:
                     sigmas2_hat.append(sigma_given[c])
 
-            sigmas2_hat = sigmas2_hat + [1] * (len(sigmas2_hat) - self.Y.shape[1])
+            sigmas2_hat = sigmas2_hat + [1] * (len(sigma_given) - len(sigmas2_hat))
+            xi = xi + [0] * (len(xi_given) - len(xi))
             thetas = [list(sigmas2_hat) + list(xi) + list(psi)]
 
             thetas_df = pd.DataFrame(thetas, columns=
@@ -607,9 +610,9 @@ class Estimate:
             thetas_df.columns = ['theta', 'value']
             thetas_df['model'] = cur_m
             sigma_est = [1 if sigma_given[c] != sigma_given[c] else 0 for c in range(self.Y.shape[1])]
-            sigma_est = sigma_est + [0] * (len(sigma_est) - self.Y.shape[1])
+            sigma_est = sigma_est + [0] * (len(sigma_given) - len(sigma_est))
             xi_est = [1 if xi_given[c] != xi_given[c] else 0 for c in range(self.Y.shape[1])]
-            xi_est = xi_est + [0] * (len(xi_est) - self.Y.shape[1])
+            xi_est = xi_est + [0] *  (len(xi_given) - len(xi_est))
             psi_est = [1 if psi_given[c] != psi_given[c] else 0 for c in range(len(psi_given))]
             thetas_df['estimated'] = sigma_est + xi_est + psi_est
             thetas_df['to_include'] = [1] * self.Y.shape[1] + [0] * (len(sigma_given) - self.Y.shape[1]) + \
