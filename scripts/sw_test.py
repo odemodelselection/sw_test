@@ -1,3 +1,5 @@
+import os
+
 from scipy import stats
 from casadi import *
 from scipy.integrate import odeint
@@ -9,6 +11,8 @@ from matplotlib import pyplot as plt
 np.set_printoptions(suppress=True)
 import matplotlib.colors as mcolors
 from models import *
+
+math_func = ['log']
 
 ## SW Test
 class SWtest:
@@ -24,6 +28,8 @@ class SWtest:
             self.named_colors = list(mcolors.CSS4_COLORS.keys())
 
     def preprocess_txt(self, x):
+        for func in math_func:
+            x = x.replace(func, '')
         return self.remove_punctuation(x.replace('\n', '').strip().lower()).split()
 
     def remove_punctuation(self, x):
@@ -121,8 +127,7 @@ class SWtest:
 
         options = {'reltol': 1e-10, 'abstol': 1e-12, 'tf': cur_t,
                    'output_t0': False, 'max_num_steps': 500000, 'verbose': False,
-                   'dump_in': False, 'dump_out': False,
-                   'dump_dir': 'C:/DrugsIntel/SummerPracticum/Thesis/NoteBooks/casadi/pipeline_folder/'}
+                   }
         F = integrator('F', 'cvodes', dae, options)
 
         D_x = F.factory('D', ['x0', 'p'], ['jac:xf:x0'])
@@ -515,6 +520,10 @@ class SWtest:
                                args=tuple(list(psi)))
 
         # plot models curves
+        plots = [x for x in os.listdir('./plots/') if 'fitted_models_for_state' in x]
+        for file in plots:
+            os.remove('./plots/{}'.format(file))
+
         for c in range(Y.shape[1]):
             plt.scatter(T, Y[:, c], label=r'$Y_{}$'.format(c + 1))
             for m in X_hats.keys():
@@ -522,27 +531,23 @@ class SWtest:
             plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
             plt.xlabel(time_name, fontsize=14)
             plt.ylabel(state_names[c], fontsize=14)
-            try:
-                os.remove('./plots/state_{}.png'.format(state_names[c]))
-            except:
-                pass
-            plt.savefig('./plots/state_{}.png'.format(state_names[c]),
+            plt.savefig('./plots/fitted_models_for_state_{}.png'.format(state_names[c]),
                         bbox_inches='tight')
             plt.show()
+
+        plots = [x for x in os.listdir('./plots/') if 'fitted_states_for_model' in x]
+        for file in plots:
+            os.remove('./plots/{}'.format(file))
 
         for m in X_hats.keys():
             for c in range(Y.shape[1]):
                 plt.plot(ode_T, X_hats[m][:, c], label=r'$\hat{x}_{' + '{}'.format(str(m) + str(c + 1)) + '}$',
-                         c=self.named_colors[c])
-                plt.scatter(T, Y[:, c], label=r'$Y_{}$'.format(c + 1), c=self.named_colors[c])
+                         color=self.named_colors[c])
+                plt.scatter(T, Y[:, c], label=r'$Y_{}$'.format(c + 1), color=self.named_colors[c])
                 plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
                 plt.xlabel(time_name, fontsize=14)
                 # plt.ylabel('State values', fontsize=14)
-            try:
-                os.remove('./plots/model_{}.png'.format(m))
-            except:
-                pass
-            plt.savefig('./plots/model_{}.png'.format(m),
+            plt.savefig('./plots/fitted_states_for_model_{}.png'.format(m),
                         bbox_inches='tight')
             plt.show()
 
@@ -571,6 +576,8 @@ class Estimate:
         self.models_best_w = None
 
     def preprocess_txt(self, x):
+        for func in math_func:
+            x = x.replace(func, '')
         return self.remove_punctuation(x.replace('\n', '').strip().lower()).split()
 
     def remove_punctuation(self, x):
@@ -741,6 +748,8 @@ class Estimate:
 
             if len(theta_vars) != len(psi_est_setups):
                 print('Exit on Error of theta_vars != psi_est_setups')
+                print(theta_vars)
+                print(psi_est_setups)
                 sys.exit(1)
 
             psi_given = []
@@ -835,6 +844,10 @@ class Estimate:
         best_res_s = []
         best_res_n = []
 
+        xi_bounds = [x for x, y in zip(models_psi[m]['xi_bounds'], models_psi[m]['xi_given']) if y != y]
+        psi_bounds = [x for x, y in zip(models_psi[m]['psi_bounds'], models_psi[m]['psi_given']) if y != y]
+        bounds = xi_bounds + psi_bounds
+
         for l in tqdm(range(self.B)):
             opt_w = []
             for i in range(len(models_psi[m]['xi_inits'])):
@@ -847,9 +860,6 @@ class Estimate:
                                                    models_psi[m]['psi_inits'][i][1]))
             opt_w = np.asarray(opt_w)
 
-            xi_bounds = [x for x, y in zip(models_psi[m]['xi_bounds'], models_psi[m]['xi_given']) if y != y]
-            psi_bounds = [x for x, y in zip(models_psi[m]['psi_bounds'], models_psi[m]['psi_given']) if y != y]
-            bounds = xi_bounds + psi_bounds
             f(opt_w)
             # run SLPSQ procedure
             res = minimize(f, opt_w,
@@ -882,7 +892,10 @@ class Estimate:
 
         for l in tqdm(range(self.BB)):
             opt_w = np.asarray(
-                [stats.truncnorm.rvs(loc=best_w[i], scale=np.sqrt(np.abs(best_w[i])) / 3, a=0, b=np.inf)
+                [stats.truncnorm.rvs(loc=best_w[i],
+                                     scale=np.sqrt(np.abs(best_w[i])) / 3,
+                                     a=bounds[i][0],
+                                     b=bounds[i][1])
                  for i in range(p + d)])
             f(opt_w)
             # run SLPSQ procedure
@@ -918,14 +931,12 @@ class Estimate:
 
         self.models_psi = models_psi
         plt.plot(best_res_n, np.log(best_res_s))
+        plt.axvline(self.B, linestyle='dotted', color='grey', label='2d Opt.')
         plt.xlabel('iteration')
         plt.ylabel('min of loss function (log)')
         plt.title('Model: {}'.format(m))
-        try:
-            os.remove('./plots/loss_functionstate_{}.png'.format(m))
-        except:
-            pass
-        plt.savefig('./plots/loss_functionstate_{}.png'.format(m), bbox_inches='tight')
+        plt.legend()
+        plt.savefig('./plots/loss_function_of_model_{}.png'.format(m), bbox_inches='tight')
         plt.clf()
 
         return {'xi': xi, 'psi': psi}
@@ -945,6 +956,10 @@ class Estimate:
         self.T = data['T'].values
 
         self.models_best_w = {}
+
+        plots = [x for x in os.listdir('./plots/') if 'loss_function_of_model' in x]
+        for file in plots:
+            os.remove('./plots/{}'.format(file))
 
         for m in self.models_func.keys():
             print('MLE for Model {}'.format(m))
