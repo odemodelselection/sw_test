@@ -2,33 +2,30 @@ import numpy as np
 
 # Define ODE models in scipy.integrate.odeint format where model1, model2,...,modelK
 # corresponds to the model_1.txt,model_2.txt,...,model_K.txt files in models folder.
-# Gompertz
-def model1(x, t, psi1, psi2):
-    x1 = x
-    d_x1 = -psi1*x1*np.log(x1/psi2)
-    return np.array(d_x1)
+# eq(4)
+def model4(x, t, psi1, psi2, psi3, psi4, psi5):
+    x1, x2 = x
+    d_x1 = psi2 * psi3 * x2 * x1 - psi4 * x1 - psi5 * np.power(x1, 2)
+    d_x2 = psi1 * x2 - psi2 * x2 * x1
+    return np.array([d_x1, d_x2])
 
-#ExpDecay + bias
-def model2(x, t, psi1, psi2):
-    x1 = x
-    d_x1 = psi1*x1 + psi2
-    return np.array(d_x1)
+# eq(3)
+def model3(x, t, psi1, psi2, psi3, psi4, psi5):
+    x1, x2 = x
+    d_x1 = psi2 * psi3 * x2 * x1 / (1 + psi2 * psi5 * x1) - psi4 * x1
+    d_x2 = psi1 * x2 - psi2 * x2 * x1 / (1 + psi2 * psi5 * x1)
+    return np.array([d_x1, d_x2])
 
-#Logistic Growth
-def model3(x, t, psi1, psi2):
-    x1 = x
-    d_x1 = psi1*x1*(1 - x1/psi2)
-    return np.array(d_x1)
+# eq(2)
+def model2(x, t, psi1, psi2, psi3, psi4, psi5):
+    x1, x2 = x
+    d_x1 = psi2 * psi3 * x2 * x1 - psi4 * x1
+    d_x2 = psi1 * x2 *(1 - x2/psi5) - psi2 * x2 * x1
+    return np.array([d_x1, d_x2])
 
-# #Von Bertalanffy model - obtained MLE later produce errors in casadi when calculating derivatives
-# def model4(x, t, psi1, psi2, psi3):
-#     x1 = x
-#     d_x1 = psi1*x1**(psi3) - psi2*x1
-#     return np.array(d_x1)
-
-#Richardson model
-def model4(x, t, psi1, psi2, psi3):
-    x1 = x
-    d_x1 = psi1*(1-(x1/psi2)**psi3)*x1
-    return np.array(d_x1)
-
+# eq(1)
+def model1(x, t, psi1, psi2, psi3, psi4):
+    x1, x2 = x
+    d_x1 = psi2 * psi3 * x2 * x1 - psi4 * x1
+    d_x2 = psi1 * x2 - psi2 * x2 * x1
+    return np.array([d_x1, d_x2])
