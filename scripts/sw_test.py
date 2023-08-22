@@ -677,7 +677,7 @@ class Estimate:
 
             if len(sigma_est_setups) != len(xi_est_setups):
                 print(
-                    'Exit on Error of the number of sigma != the number of xi for model {} in theta_setups.csv'.format(
+                    'Exit on Error of the number of sigma != the number of xi for model {} in estimation_setups.csv'.format(
                         model))
                 sys.exit(1)
 
