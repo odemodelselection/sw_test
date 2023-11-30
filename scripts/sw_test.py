@@ -45,8 +45,17 @@ class SWtest:
             'theta', 'psi_symb')
 
     def casadi_replace(self, ode, x_vars_dict, theta_vars_dict):
+        x_items = x_vars_dict.items()
+        x_len = [len(x[0]) for x in x_items]
+        x_items = list(zip(*sorted(zip(x_len, x_items))))[1][::-1]
+
         for x, new_x in x_vars_dict.items():
             ode = ode.replace(x, new_x)
+
+        theta_items = theta_vars_dict.items()
+        theta_len = [len(x[0]) for x in theta_items]
+        theta_items = list(zip(*sorted(zip(theta_len, theta_items))))[1][::-1]
+
         for theta, new_theta in theta_vars_dict.items():
             ode = ode.replace(theta, new_theta)
 
