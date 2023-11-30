@@ -16,12 +16,13 @@ math_func = ['log']
 
 ## SW Test
 class SWtest:
-    def __init__(self):
+    def __init__(self, save_eps):
         self.target_folder = './models/'
         self.ode_systems = os.listdir(self.target_folder)
         self.models_func = {i: eval('model{}'.format(i)) for i in range(1, len(self.ode_systems) + 1)}
         self.Y = None
         self.T = None
+        self.eps = save_eps
         if len(self.ode_systems) <= 10:
             self.named_colors = plt.cm.tab10.colors
         else:
@@ -538,9 +539,13 @@ class SWtest:
             for m in X_hats.keys():
                 plt.plot(ode_T, X_hats[m][:, c], label=r'$\hat{x}_{' + '{}'.format(str(m) + str(c + 1)) + '}$')
             plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
-            plt.xlabel(time_name, fontsize=14)
-            plt.ylabel(state_names[c], fontsize=14)
-            plt.savefig('./plots/fitted_models_for_state_{}.png'.format(state_names[c]),
+            plt.xlabel(time_name, fontsize=16)
+            plt.ylabel(state_names[c], fontsize=16)
+            if self.eps:
+                plt.savefig('./plots/fitted_models_for_state_{}.eps'.format(state_names[c]),
+                            bbox_inches='tight', dpi=600)
+            else:
+                plt.savefig('./plots/fitted_models_for_state_{}.png'.format(state_names[c]),
                         bbox_inches='tight')
             plt.show()
 
@@ -554,10 +559,14 @@ class SWtest:
                          color=self.named_colors[c])
                 plt.scatter(T, Y[:, c], label=r'$Y_{}$'.format(c + 1), color=self.named_colors[c])
                 plt.legend(fontsize=14, loc='center left', bbox_to_anchor=(1, 0.5))
-                plt.xlabel(time_name, fontsize=14)
+                plt.xlabel(time_name, fontsize=16)
                 # plt.ylabel('State values', fontsize=14)
-            plt.savefig('./plots/fitted_states_for_model_{}.png'.format(m),
-                        bbox_inches='tight')
+            if self.eps:
+                plt.savefig('./plots/fitted_states_for_model_{}.eps'.format(m),
+                            bbox_inches='tight', dpi=600)
+            else:
+                plt.savefig('./plots/fitted_states_for_model_{}.png'.format(m),
+                            bbox_inches='tight')
             plt.show()
 
         model_selection_table = self.selection_in_favor(theta_setups,
@@ -572,7 +581,7 @@ class SWtest:
 
 
 class Estimate:
-    def __init__(self):
+    def __init__(self, save_eps):
         self.B = None
         self.BB = None
         self.save_plots = None
@@ -583,6 +592,7 @@ class Estimate:
         self.T = None
         self.models_psi = None
         self.models_best_w = None
+        self.eps = save_eps
 
     def preprocess_txt(self, x):
         for func in math_func:
@@ -945,7 +955,10 @@ class Estimate:
         plt.ylabel('min of loss function (log)')
         plt.title('Model: {}'.format(m))
         plt.legend()
-        plt.savefig('./plots/loss_function_of_model_{}.png'.format(m), bbox_inches='tight')
+        if self.eps:
+            plt.savefig('./plots/loss_function_of_model_{}.eps'.format(m), bbox_inches='tight', dpi=600)
+        else:
+            plt.savefig('./plots/loss_function_of_model_{}.png'.format(m), bbox_inches='tight')
         plt.clf()
 
         return {'xi': xi, 'psi': psi}
@@ -985,7 +998,8 @@ class SWtestModelSelection:
                  log_transform=False,
                  B=1000,
                  BB=100,
-                 n_plot=None):
+                 n_plot=None,
+                 save_eps=False):
         self.with_estimation = with_estimation
         self.log_transform = log_transform
         self.B = B
@@ -993,8 +1007,8 @@ class SWtestModelSelection:
         self.alpha = alpha
         self.n_plot = n_plot
 
-        self.Estimations = Estimate()
-        self.RunSWtest = SWtest()
+        self.Estimations = Estimate(save_eps=save_eps)
+        self.RunSWtest = SWtest(save_eps=save_eps)
 
     def run(self):
         if self.with_estimation:
