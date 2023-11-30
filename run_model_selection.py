@@ -9,7 +9,7 @@ sys.path.insert(0, currentdir + '/scripts/')
 
 from sw_test import SWtestModelSelection
 
-sw_ms = SWtestModelSelection(with_estimation=False,
+sw_ms = SWtestModelSelection(with_estimation=True,
                              alpha=0.05,
                              log_transform=False,
                              B=500,
