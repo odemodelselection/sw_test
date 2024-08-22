@@ -1,0 +1,11 @@
+By the following link you can download the code to reproduce the results from the article:
+https://hub.docker.com/repository/docker/alasko/ode-model-selection/general
+
+1. Command to pull Docker image:
+docker pull alasko/ode-model-selection
+
+2. To run the image: 
+docker run -p 9876:9876 alasko/ode-model-selection
+
+3. Once you start the container you need to copy and paste into the browser the following link from the terminal:
+http://127.0.0.1:9876/tree?token=<...token...>
