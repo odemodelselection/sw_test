@@ -586,7 +586,7 @@ class Estimate:
         self.BB = None
         self.save_plots = None
         self.target_folder = './models/'
-        self.ode_systems = os.listdir(self.target_folder)
+        self.ode_systems = sorted(os.listdir(self.target_folder))
         self.models_func = {i: eval('model{}'.format(i)) for i in range(1, len(self.ode_systems) + 1)}
         self.Y = None
         self.T = None
